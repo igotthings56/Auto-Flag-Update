@@ -1,0 +1,37 @@
+local player = game.Players.LocalPlayer
+local character = player.Character
+
+if character then
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    
+    if humanoidRootPart then
+        -- Coordinates you provided
+        local coords = CFrame.new(-64.8528595, 159.539032, 6431.74268)
+        
+        -- Teleport the character to the specified coordinates
+        humanoidRootPart.CFrame = coords
+    else
+        warn("HumanoidRootPart not found!")
+    end
+else
+    warn("Character not found!")
+end
+
+task.wait(5) -- Wait for 5 seconds before executing any other code
+
+local securitytoken = "dda8742a5f8246378f1a9c8ed61b8e40" -- Update this security token when the game updates and changes it
+local args = {
+    [1] = "Magnet Flag",
+    [2] = securitytoken
+}
+
+task.spawn(function()
+    while task.wait() do
+        for i = 1, 24 do
+            game:GetService("ReplicatedStorage").Network:FindFirstChild("Flags: Consume"):InvokeServer(unpack(args))
+        end
+        task.wait(0.5)
+        repeat task.wait(0.1) until not workspace["__THINGS"].Flags:FindFirstChild("Model")
+    end
+end)
+
