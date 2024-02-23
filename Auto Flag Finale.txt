@@ -1,44 +1,42 @@
-task.wait(5) -- Wait for 5 seconds before executing any other code
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local VirtualUser = game:GetService('VirtualUser')
-game.Players.LocalPlayer.Idled:Connect(function()
-    VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    task.wait(1)
-    VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
-
-local player = game.Players.LocalPlayer
-local character = player.Character
-
-if character then
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    
-    if humanoidRootPart then
-        -- Coordinates you provided
-        local coords = CFrame.new(-64.8528595, 159.539032, 6431.74268)
-        
-        -- Teleport the character to the specified coordinates
-        humanoidRootPart.CFrame = coords
-    else
-        warn("HumanoidRootPart not found!")
+-- Function to teleport to the specified CFrame and place flags
+local function teleportAndPlaceFlags()
+    local p, c = game.Players.LocalPlayer, game.Players.LocalPlayer.Character
+    c.HumanoidRootPart.CFrame = CFrame.new(-19.4524117, 53.5827065, -312.074615, -0.378468424, 6.3260277e-09, 0.925614178, 1.66585821e-08, 1, -2.29906077e-11, -0.925614178, 1.5410718e-08, -0.378468424)
+    task.wait(1) -- Wait a moment before placing the flags
+    -- Place the flags (adjust the path to Flags: Consume based on your game)
+    local securitytoken = "dda8742a5f8246378f1a9c8ed61b8e40"
+    local args = {"Magnet Flag", securitytoken}
+    for i = 1, 24 do
+        ReplicatedStorage.Network:FindFirstChild("Flags: Consume"):InvokeServer(unpack(args))
     end
-else
-    warn("Character not found!")
 end
 
-local securitytoken = "dda8742a5f8246378f1a9c8ed61b8e40" -- Update this security token when the game updates and changes it
-local args = {
-    [1] = "Magnet Flag",
-    [2] = securitytoken
-}
-
-task.spawn(function()
-    while task.wait() do
-        for i = 1, 24 do
-            game:GetService("ReplicatedStorage").Network:FindFirstChild("Flags: Consume"):InvokeServer(unpack(args))
-        end
-        task.wait(0.5)
-        repeat task.wait(0.1) until not workspace["__THINGS"].Flags:FindFirstChild("Model")
+-- Function to open eggs
+local function openEggs()
+    while true do
+        local args = {
+            [1] = "Rainbow Egg",
+            [2] = 35  -- Amount of eggs to open
+        }
+        ReplicatedStorage.Network.Eggs_RequestPurchase:InvokeServer(unpack(args))
+        task.wait() -- Wait for the server to respond before sending another request
     end
-end)
+end
 
+-- Main loop
+while true do
+    -- Teleport and place flags
+    teleportAndPlaceFlags()
+    
+    -- Wait for 2 hours (adjust the time if needed)
+    task.wait(7200)
+    
+    -- Teleport to open eggs
+    local p, c = game.Players.LocalPlayer, game.Players.LocalPlayer.Character
+    c.HumanoidRootPart.CFrame = CFrame.new(-19.4524117, 53.5827065, -312.074615, -0.378468424, 6.3260277e-09, 0.925614178, 1.66585821e-08, 1, -2.29906077e-11, -0.925614178, 1.5410718e-08, -0.378468424)
+    
+    -- Open eggs
+    openEggs()
+end
