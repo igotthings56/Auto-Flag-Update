@@ -1,3 +1,5 @@
+task.wait(5) -- Wait for 5 seconds before executing any other code
+
 local VirtualUser = game:GetService('VirtualUser')
 game.Players.LocalPlayer.Idled:Connect(function()
     VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -23,8 +25,6 @@ if character then
 else
     warn("Character not found!")
 end
-
-task.wait(5) -- Wait for 5 seconds before executing any other code
 
 local securitytoken = "dda8742a5f8246378f1a9c8ed61b8e40" -- Update this security token when the game updates and changes it
 local args = {
