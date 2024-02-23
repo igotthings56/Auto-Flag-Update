@@ -1,42 +1,40 @@
+task.wait(2)
+
+local VirtualUser = game:GetService('VirtualUser')
+game.Players.LocalPlayer.Idled:Connect(function()
+    VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    task.wait(1)
+    VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Function to teleport to the specified CFrame and place flags
-local function teleportAndPlaceFlags()
-    local p, c = game.Players.LocalPlayer, game.Players.LocalPlayer.Character
-    c.HumanoidRootPart.CFrame = CFrame.new(-19.4524117, 53.5827065, -312.074615, -0.378468424, 6.3260277e-09, 0.925614178, 1.66585821e-08, 1, -2.29906077e-11, -0.925614178, 1.5410718e-08, -0.378468424)
-    task.wait(1) -- Wait a moment before placing the flags
-    -- Place the flags (adjust the path to Flags: Consume based on your game)
-    local securitytoken = "dda8742a5f8246378f1a9c8ed61b8e40"
-    local args = {"Magnet Flag", securitytoken}
+local function placeFlags()
+    local args = {"Magnet Flag", "dda8742a5f8246378f1a9c8ed61b8e40"}
     for i = 1, 24 do
         ReplicatedStorage.Network:FindFirstChild("Flags: Consume"):InvokeServer(unpack(args))
     end
 end
 
--- Function to open eggs
-local function openEggs()
+local function openRainbowEggs()
     while true do
-        local args = {
-            [1] = "Rainbow Egg",
-            [2] = 35  -- Amount of eggs to open
-        }
+        local args = {"Rainbow Egg", 35}
+        local Eggs = game.Players.LocalPlayer.PlayerScripts.Scripts.Game['Egg Opening Frontend']
+        getsenv(Eggs).PlayEggAnimation = function() return end
         ReplicatedStorage.Network.Eggs_RequestPurchase:InvokeServer(unpack(args))
-        task.wait() -- Wait for the server to respond before sending another request
+        wait()
     end
 end
 
--- Main loop
+local hasTeleported = false
+
 while true do
-    -- Teleport and place flags
-    teleportAndPlaceFlags()
-    
-    -- Wait for 2 hours (adjust the time if needed)
+    placeFlags()
     task.wait(7200)
-    
-    -- Teleport to open eggs
-    local p, c = game.Players.LocalPlayer, game.Players.LocalPlayer.Character
-    c.HumanoidRootPart.CFrame = CFrame.new(-19.4524117, 53.5827065, -312.074615, -0.378468424, 6.3260277e-09, 0.925614178, 1.66585821e-08, 1, -2.29906077e-11, -0.925614178, 1.5410718e-08, -0.378468424)
-    
-    -- Open eggs
-    openEggs()
+    if not hasTeleported then
+        game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-19.4524117, 53.5827065, -312.074615))
+        game:GetService("ReplicatedStorage").Network.AutoFarm_Enable:InvokeServer()
+        hasTeleported = true
+    end
+    openRainbowEggs()
 end
